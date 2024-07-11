@@ -1,0 +1,131 @@
+
+import java.util.Scanner;
+
+class RailwayStation {
+    private boolean[] tracksAvailability;
+    private final int numTracks;
+    private final String adminUsername;
+    private final String adminPassword;
+    private boolean loggedIn;
+
+    public RailwayStation(int numTracks, String adminUsername, String adminPassword) {
+        this.numTracks = numTracks;
+        tracksAvailability = new boolean[numTracks];
+        for (int i = 0; i < numTracks; i++) {
+            tracksAvailability[i] = true;
+        }
+        this.adminUsername = adminUsername;
+        this.adminPassword = adminPassword;
+        loggedIn = false;
+    }
+
+    public boolean login(String username, String password) {
+        if (adminUsername.equals(username) && adminPassword.equals(password)) {
+            loggedIn = true;
+            return true;
+        }
+        return false;
+    }
+
+    public void logout() {
+        loggedIn = false;
+        System.out.println("Logout successfully");
+    }
+
+    public void adminMenu() {
+        if (!loggedIn) {
+            System.out.println("Please log in first.");
+            return;
+        }
+
+        Scanner scanner = new Scanner(System.in);
+        int choice;
+        do {
+            System.out.println("\nAdmin Menu:");
+            System.out.println("1. Check track availability");
+            System.out.println("2. Process request");
+            System.out.println("3. Logout");
+
+            System.out.print("Enter your choice: ");
+            choice = scanner.nextInt();
+
+            switch (choice) {
+                case 1:
+                    checkAvailability();
+                    break;
+                case 2:
+                    processRequest();
+                    break;
+                case 3:
+                    logout();
+                    break;
+                default:
+                    System.out.println("Invalid choice. Please try again.");
+            }
+        } while (choice != 3);
+
+       // scanner.close();
+    }
+
+    private void checkAvailability() {
+    	
+        System.out.println("Available tracks are");
+        for (int i = 0; i < numTracks; i++) {
+            if (tracksAvailability[i]) {
+                System.out.println("Track " + (i + 1));
+            }
+        }
+    }
+
+    private void processRequest() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Enter requested track number: ");
+        int requestedTrack = scanner.nextInt();
+
+        if (requestedTrack < 1 || requestedTrack > numTracks) {
+            System.out.println("Invalid track number.");
+        } else if (tracksAvailability[requestedTrack - 1]) {
+            tracksAvailability[requestedTrack - 1] = false;
+            System.out.println("Track " + requestedTrack + " allocated successfully.");
+        } else {
+            System.out.println("Track " + requestedTrack + " is already occupied.");
+        }
+
+       boolean allOccupied = true;
+      for (boolean available : tracksAvailability) {
+           if (available) {
+                allOccupied = false;
+                break;
+            }
+       }
+        if (allOccupied) {
+            System.out.println("Please wait, all tracks are currently occupied.");
+        }
+
+       //scanner.close();
+    }
+}
+
+public class RailwayTrackAllocationSystem {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        RailwayStation stationA = new RailwayStation(5, "adminA", "passwordA");
+
+        System.out.println("Admin Login");
+        System.out.print("Enter username: ");
+        String username = scanner.nextLine();
+        System.out.print("Enter password: ");
+        String password = scanner.nextLine();
+
+        if (stationA.login(username, password)) {
+            System.out.println("Logged in successfully.");
+            stationA.adminMenu();
+        } else {
+            System.out.println("Invalid credentials.");
+        }
+
+        scanner.close();
+    }
+}
+
